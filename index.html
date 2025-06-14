@@ -1,0 +1,1495 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LynkUp - Agentura pro správu sociálních sítí</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-cyan: #00ffff;
+            --primary-purple: #8000ff;
+            --neon-pink: #ff0080;
+            --electric-blue: #0040ff;
+            --cyber-green: #00ff40;
+            --dark-bg: #0a0a0a;
+            --card-bg: rgba(20, 20, 30, 0.8);
+            --glass-bg: rgba(255, 255, 255, 0.05);
+        }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: #0a0a0a;
+            background: linear-gradient(180deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: #ffffff;
+            overflow-x: hidden;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* Jemný mesh gradient overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(ellipse at top left, rgba(74, 84, 104, 0.15) 0%, transparent 40%),
+                radial-gradient(ellipse at bottom right, rgba(52, 73, 94, 0.15) 0%, transparent 40%),
+                radial-gradient(ellipse at center, rgba(46, 64, 83, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -2;
+        }
+
+        /* Jemný noise texture pro hloubku */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.02;
+            z-index: -1;
+            pointer-events: none;
+            background-image: 
+                repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,255,255,.01) 35px, rgba(255,255,255,.01) 70px);
+        }
+
+        /* Subtilní animované částice v pozadí */
+        .bg-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float-up 20s linear infinite;
+        }
+
+        .particle:nth-child(odd) {
+            animation-duration: 25s;
+            opacity: 0.05;
+        }
+
+        .particle:nth-child(even) {
+            animation-duration: 30s;
+            width: 3px;
+            height: 3px;
+            opacity: 0.08;
+        }
+
+        @keyframes float-up {
+            0% {
+                transform: translateY(100vh) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.1;
+            }
+            90% {
+                opacity: 0.1;
+            }
+            100% {
+                transform: translateY(-10vh) translateX(100px);
+                opacity: 0;
+            }
+        }
+
+        /* Jemné světelné pruhy */
+        .light-beams {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .beam {
+            position: absolute;
+            width: 1px;
+            height: 200%;
+            background: linear-gradient(to bottom, 
+                transparent 0%, 
+                rgba(255, 255, 255, 0.03) 50%, 
+                transparent 100%);
+            transform: rotate(-45deg);
+            animation: beam-move 30s ease-in-out infinite;
+        }
+
+        .beam:nth-child(1) {
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .beam:nth-child(2) {
+            left: 30%;
+            animation-delay: 5s;
+        }
+
+        .beam:nth-child(3) {
+            left: 50%;
+            animation-delay: 10s;
+        }
+
+        .beam:nth-child(4) {
+            left: 70%;
+            animation-delay: 15s;
+        }
+
+        .beam:nth-child(5) {
+            left: 90%;
+            animation-delay: 20s;
+        }
+
+        @keyframes beam-move {
+            0%, 100% {
+                transform: rotate(-45deg) translateY(-100%);
+                opacity: 0;
+            }
+            50% {
+                transform: rotate(-45deg) translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Header */
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 20px 50px;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Orbitron', monospace;
+            font-size: 28px;
+            font-weight: 900;
+            background: linear-gradient(45deg, var(--primary-cyan), var(--primary-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+            animation: logoGlow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes logoGlow {
+            from { 
+                filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.5));
+                transform: scale(1);
+            }
+            to { 
+                filter: drop-shadow(0 0 20px rgba(128, 0, 255, 0.8));
+                transform: scale(1.02);
+            }
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 10px 15px;
+        }
+
+        .nav-links a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, var(--primary-cyan), var(--primary-purple));
+            opacity: 0;
+            transform: scaleX(0);
+            transition: all 0.3s ease;
+            border-radius: 5px;
+            z-index: -1;
+        }
+
+        .nav-links a:hover::before {
+            opacity: 0.2;
+            transform: scaleX(1);
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-cyan);
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.8);
+            transform: translateY(-2px);
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-bg-effects {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 900px;
+            padding: 0 20px;
+        }
+
+        .hero-content h1 {
+            font-family: 'Orbitron', monospace;
+            font-size: 6rem;
+            font-weight: 900;
+            margin-bottom: 30px;
+            background: linear-gradient(45deg, var(--primary-cyan), var(--primary-purple), var(--neon-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 50px rgba(0, 255, 255, 0.5);
+            animation: titleGlitch 4s ease-in-out infinite;
+            position: relative;
+        }
+
+        @keyframes titleGlitch {
+            0%, 95%, 100% { transform: translate(0); }
+            96% { transform: translate(2px, -2px); }
+            97% { transform: translate(-2px, 2px); }
+            98% { transform: translate(2px, 2px); }
+            99% { transform: translate(-2px, -2px); }
+        }
+
+        .hero-content p {
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+            font-weight: 300;
+            opacity: 0.9;
+            animation: slideInUp 1s ease-out 0.2s both;
+            text-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+        }
+
+        .hero-tagline {
+            font-size: 1.6rem;
+            margin-bottom: 50px;
+            opacity: 0.8;
+            font-weight: 400;
+            animation: slideInUp 1s ease-out 0.3s both;
+            color: var(--primary-cyan);
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 18px 40px;
+            background: linear-gradient(45deg, var(--primary-cyan), var(--primary-purple));
+            border: none;
+            border-radius: 50px;
+            color: #000;
+            font-family: 'Orbitron', monospace;
+            font-size: 1.2rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            animation: slideInUp 1s ease-out 0.4s both;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: all 0.5s ease;
+        }
+
+        .cta-button:hover::before {
+            left: 100%;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(0, 255, 255, 0.6);
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        @keyframes slideInUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Scroll Indicator */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            opacity: 0.7;
+            animation: fadeInUp 1s ease-out 1s both, bounce 2s ease-in-out infinite;
+            cursor: pointer;
+        }
+
+        .scroll-text {
+            font-size: 0.9rem;
+            color: var(--primary-cyan);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .scroll-arrow {
+            width: 40px;
+            height: 40px;
+            border: 2px solid var(--primary-cyan);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+        }
+
+        .scroll-arrow::after {
+            content: '';
+            width: 10px;
+            height: 10px;
+            border-right: 2px solid var(--primary-cyan);
+            border-bottom: 2px solid var(--primary-cyan);
+            transform: rotate(45deg);
+            margin-top: -2px;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
+            40% { transform: translateX(-50%) translateY(-10px); }
+            60% { transform: translateX(-50%) translateY(-5px); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateX(-50%) translateY(30px); }
+            to { opacity: 0.7; transform: translateX(-50%) translateY(0); }
+        }
+
+        /* Section Styles */
+        .section {
+            padding: 120px 50px;
+            position: relative;
+            background: rgba(20, 20, 30, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+        }
+
+        .section h2 {
+            font-family: 'Orbitron', monospace;
+            font-size: 3.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 80px;
+            background: linear-gradient(45deg, var(--primary-cyan), var(--primary-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            position: relative;
+        }
+
+        .section h2::after {
+            content: '';
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-cyan), var(--primary-purple));
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+
+        /* Services Section */
+        .services {
+            background: rgba(20, 20, 30, 0.3);
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .service-card {
+            background: var(--card-bg);
+            padding: 40px 30px;
+            border-radius: 20px;
+            text-align: center;
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            backdrop-filter: blur(20px);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, var(--primary-cyan), var(--primary-purple), var(--neon-pink), var(--primary-cyan));
+            border-radius: 20px;
+            z-index: -1;
+            opacity: 0;
+            transition: all 0.4s ease;
+        }
+
+        .service-card:hover::before {
+            opacity: 1;
+            animation: borderRotate 3s linear infinite;
+        }
+
+        @keyframes borderRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .service-card:hover {
+            transform: translateY(-15px) rotateX(5deg);
+            box-shadow: 0 30px 60px rgba(0, 255, 255, 0.3);
+        }
+
+        .service-icon {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .icon-square {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            transition: all 0.4s ease;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+        }
+
+        .instagram-icon {
+            background: linear-gradient(45deg, #f9ce34, #e73c7e, #23a6d5);
+        }
+
+        .facebook-icon {
+            background: linear-gradient(45deg, #1877f2, #42a5f5);
+        }
+
+        .tiktok-icon {
+            background: linear-gradient(45deg, #000000, #25f4ee);
+        }
+
+        .linkedin-icon {
+            background: linear-gradient(45deg, #0077b5, #00a0dc);
+        }
+
+        .service-card:hover .icon-square {
+            transform: scale(1.2) rotateY(180deg);
+            box-shadow: 0 0 40px rgba(0, 255, 255, 0.6);
+        }
+
+        .service-card h3 {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: var(--primary-cyan);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .service-card p {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            opacity: 0.9;
+            color: #e0e0e0;
+        }
+
+        /* Results Section */
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .result-card {
+            background: var(--card-bg);
+            padding: 50px 40px;
+            border-radius: 20px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .result-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.1), transparent);
+            transition: all 0.6s ease;
+        }
+
+        .result-card:hover::after {
+            left: 100%;
+        }
+
+        .result-card:hover {
+            transform: translateY(-15px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(0, 255, 255, 0.4);
+            border-color: var(--primary-cyan);
+        }
+
+        .result-number {
+            font-family: 'Orbitron', monospace;
+            font-size: 4rem;
+            font-weight: 900;
+            color: var(--primary-cyan);
+            margin-bottom: 15px;
+            text-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+            position: relative;
+            z-index: 2;
+        }
+
+        .result-progress {
+            width: 100%;
+            height: 8px;
+            background: rgba(0, 255, 255, 0.1);
+            border-radius: 4px;
+            margin: 20px 0;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .result-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-cyan), var(--primary-purple));
+            border-radius: 4px;
+            width: 0%;
+            transition: width 2s ease-in-out;
+            position: relative;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+
+        .result-progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+            animation: progressShine 2s ease-in-out infinite;
+        }
+
+        @keyframes progressShine {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .result-card.animated .result-progress-bar {
+            width: 85%;
+        }
+
+        .result-text {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 2;
+            color: #e0e0e0;
+        }
+
+        /* Partners Section */
+        .partners {
+            background: rgba(20, 20, 30, 0.3);
+            overflow: hidden;
+        }
+
+        .partners-scroll {
+            display: flex;
+            animation: scrollPartners 25s linear infinite;
+            gap: 100px;
+            white-space: nowrap;
+        }
+
+        .partner-logo {
+            height: 60px;
+            width: auto;
+            opacity: 0.7;
+            transition: all 0.3s ease;
+            filter: brightness(0) invert(1);
+            flex-shrink: 0;
+        }
+
+        .partner-logo:hover {
+            opacity: 1;
+            transform: scale(1.1);
+            filter: brightness(0) invert(1) drop-shadow(0 0 10px rgba(0, 255, 255, 0.8));
+        }
+
+        @keyframes scrollPartners {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+
+        /* Showcase Section */
+        .showcase-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 50px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .showcase-item {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 40px;
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            backdrop-filter: blur(20px);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .showcase-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(0, 255, 255, 0.05), rgba(128, 0, 255, 0.05));
+            opacity: 0;
+            transition: all 0.4s ease;
+        }
+
+        .showcase-item:hover::before {
+            opacity: 1;
+        }
+
+        .showcase-item:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 255, 255, 0.3);
+        }
+
+        .showcase-image {
+            width: 100%;
+            height: 500px;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 25px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(0, 255, 255, 0.2);
+        }
+
+        .showcase-image img {
+            width: auto;
+            height: 100%;
+            max-width: 100%;
+            object-fit: contain;
+            transition: all 0.4s ease;
+        }
+
+        .showcase-item:hover .showcase-image img {
+            transform: scale(1.05);
+        }
+
+        .showcase-description {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            color: #e0e0e0;
+        }
+
+        .showcase-description strong {
+            color: var(--primary-cyan);
+            font-family: 'Orbitron', monospace;
+        }
+
+        /* Certifications Section */
+        .certifications {
+            background: rgba(20, 20, 30, 0.3);
+        }
+
+        .certifications-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .certification-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            backdrop-filter: blur(20px);
+            transition: all 0.4s ease;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .certification-card::before {
+            content: '';
+            position: absolute;
+            top: -100%;
+            left: -100%;
+            width: 300%;
+            height: 300%;
+            background: linear-gradient(45deg, transparent, rgba(0, 255, 255, 0.1), transparent);
+            transition: all 0.6s ease;
+            transform: rotate(45deg);
+        }
+
+        .certification-card:hover::before {
+            top: -50%;
+            left: -50%;
+        }
+
+        .certification-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 255, 255, 0.3);
+        }
+
+        .certification-image {
+            width: 100%;
+            height: 200px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid rgba(0, 255, 255, 0.2);
+        }
+
+        .certification-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: all 0.3s ease;
+        }
+
+        .certification-card:hover .certification-image img {
+            transform: scale(1.05);
+        }
+
+        .certification-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.2rem;
+            color: var(--primary-cyan);
+            font-weight: 600;
+        }
+
+        /* Contact Form */
+        .contact {
+            background: rgba(20, 20, 30, 0.3);
+        }
+
+        .contact p {
+            font-size: 1.4rem;
+            margin-bottom: 60px;
+            opacity: 0.8;
+            text-align: center;
+        }
+
+        .contact-form {
+            max-width: 700px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .form-group {
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            color: var(--primary-cyan);
+            font-family: 'Orbitron', monospace;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 18px 20px;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 10px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            color: white;
+            font-size: 1.1rem;
+            font-family: 'Rajdhani', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-cyan);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
+            background: rgba(0, 255, 255, 0.05);
+        }
+
+        .submit-btn {
+            padding: 20px 50px;
+            background: linear-gradient(45deg, var(--primary-cyan), var(--primary-purple));
+            border: none;
+            border-radius: 50px;
+            color: #000;
+            font-family: 'Orbitron', monospace;
+            font-size: 1.3rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: all 0.5s ease;
+        }
+
+        .submit-btn:hover::before {
+            left: 100%;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(0, 255, 255, 0.6);
+        }
+
+        /* Footer */
+        footer {
+            background: rgba(10, 10, 10, 0.95);
+            padding: 60px 50px;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+        }
+
+        .footer-content h3 {
+            font-family: 'Orbitron', monospace;
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            background: linear-gradient(45deg, var(--primary-cyan), var(--primary-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .contact-info {
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .contact-info div {
+            opacity: 0.8;
+            font-size: 1.1rem;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .social-links a {
+            color: var(--primary-cyan);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            padding: 10px 20px;
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            border-radius: 25px;
+            backdrop-filter: blur(10px);
+        }
+
+        .social-links a:hover {
+            transform: translateY(-3px) scale(1.1);
+            color: #fff;
+            background: linear-gradient(45deg, var(--primary-cyan), var(--primary-purple));
+            box-shadow: 0 10px 20px rgba(0, 255, 255, 0.4);
+        }
+
+        .company-info {
+            margin: 30px 0;
+            opacity: 0.8;
+        }
+
+        .company-info p {
+            margin: 8px 0;
+            font-size: 1.1rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-content h1 { font-size: 3.5rem; }
+            .hero-content p { font-size: 1.6rem; }
+            .hero-tagline { font-size: 1.2rem; }
+            header { padding: 15px 20px; }
+            .nav-links { gap: 15px; font-size: 0.9rem; }
+            .section { padding: 80px 20px; }
+            .services-grid, .results-grid, .showcase-grid, .certifications-grid { 
+                grid-template-columns: 1fr; 
+                gap: 30px;
+            }
+            .service-card, .result-card, .showcase-item, .certification-card { 
+                padding: 30px 20px; 
+            }
+            .section h2 { font-size: 2.5rem; }
+            .contact-info { flex-direction: column; gap: 20px; }
+            .social-links { gap: 20px; flex-wrap: wrap; }
+        }
+
+        @media (max-width: 480px) {
+            .hero-content h1 { font-size: 2.8rem; }
+            .hero-content p { font-size: 1.3rem; }
+            .nav-links { display: none; }
+            .section h2 { font-size: 2rem; }
+            .cta-button, .submit-btn { 
+                padding: 15px 30px; 
+                font-size: 1rem; 
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Jemné částice v pozadí -->
+    <div class="bg-particles" id="particles"></div>
+    
+    <!-- Světelné pruhy -->
+    <div class="light-beams">
+        <div class="beam"></div>
+        <div class="beam"></div>
+        <div class="beam"></div>
+        <div class="beam"></div>
+        <div class="beam"></div>
+    </div>
+
+    <header>
+        <nav>
+            <div class="logo">LynkUp</div>
+            <ul class="nav-links">
+                <li><a href="#home">Domů</a></li>
+                <li><a href="#services">Služby</a></li>
+                <li><a href="#results">Výsledky</a></li>
+                <li><a href="#contact">Kontakt</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="hero" id="home">
+        <div class="hero-bg-effects">
+            <!-- Odstraněny floating orbs -->
+        </div>
+        <div class="hero-content">
+            <h1>LynkUp</h1>
+            <p>Rosteme s vámi na sociálních sítích</p>
+            <div class="hero-tagline">Zvyšujeme vaši online přítomnost a přinášíme reálné výsledky</div>
+            <a href="#contact" class="cta-button">Získejte zdarma analýzu</a>
+        </div>
+        <div class="scroll-indicator" onclick="document.querySelector('#services').scrollIntoView({behavior: 'smooth', block: 'start'})">
+            <div class="scroll-text">Scroll dolů</div>
+            <div class="scroll-arrow"></div>
+        </div>
+    </section>
+
+    <section class="section services" id="services">
+        <h2>Naše služby</h2>
+        <div class="services-grid">
+            <div class="service-card">
+                <div class="service-icon">
+                    <div class="icon-square instagram-icon">
+                        <svg width="30" height="30" viewBox="0 0 24 24" fill="white">
+                            <path d="M12 6c-3.3 0-6 2.7-6 6s2.7 6 6 6 6-2.7 6-6-2.7-6-6-6zm0 9.75c-2.07 0-3.75-1.68-3.75-3.75S9.93 8.25 12 8.25s3.75 1.68 3.75 3.75-1.68 3.75-3.75 3.75z"/>
+                            <circle cx="18" cy="6" r="1.5" fill="white"/>
+                            <path d="M15 2H9C5.134 2 2 5.134 2 9v6c0 3.866 3.134 7 7 7h6c3.866 0 7-3.134 7-7V9c0-3.866-3.134-7-7-7zm4.5 13c0 2.485-2.015 4.5-4.5 4.5H9c-2.485 0-4.5-2.015-4.5-4.5V9c0-2.485 2.015-4.5 4.5-4.5h6c2.485 0 4.5 2.015 4.5 4.5v6z"/>
+                        </svg>
+                    </div>
+                </div>
+                <h3>Instagram Management</h3>
+                <p>Profesionální správa vašeho Instagram profilu s kreativním obsahem, stories a reels</p>
+            </div>
+            <div class="service-card">
+                <div class="service-icon">
+                    <div class="icon-square facebook-icon">
+                        <svg width="30" height="30" viewBox="0 0 24 24" fill="white">
+                            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                        </svg>
+                    </div>
+                </div>
+                <h3>Facebook Marketing</h3>
+                <p>Cílené Facebook kampaně a organický růst s maximální návratností investic</p>
+            </div>
+            <div class="service-card">
+                <div class="service-icon">
+                    <div class="icon-square tiktok-icon">
+                        <svg width="30" height="30" viewBox="0 0 24 24" fill="white">
+                            <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
+                        </svg>
+                    </div>
+                </div>
+                <h3>TikTok Content</h3>
+                <p>Virální TikTok obsah, který osloví mladší generaci a zvýší vaší dosah</p>
+            </div>
+            <div class="service-card">
+                <div class="service-icon">
+                    <div class="icon-square linkedin-icon">
+                        <svg width="30" height="30" viewBox="0 0 24 24" fill="white">
+                            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                        </svg>
+                    </div>
+                </div>
+                <h3>LinkedIn - Založení & Správa</h3>
+                <p>Kompletní založení LinkedIn profilu/stránky a následná profesionální správa pro B2B networking</p>
+            </div>
+            <div class="service-card">
+                <div class="service-icon">📊</div>
+                <h3>Analytika & Reporting</h3>
+                <p>Podrobné analýzy výkonu a měsíční reporty s doporučeními pro zlepšení</p>
+            </div>
+            <div class="service-card">
+                <div class="service-icon">🎯</div>
+                <h3>Strategie & Konzultace</h3>
+                <p>Vytvoření kompletní social media strategie šité na míru vašemu byznysu</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section results" id="results">
+        <h2>Naše výsledky mluví za vše</h2>
+        <div class="results-grid">
+            <div class="result-card" data-target="2500000" data-suffix=" Kč">
+                <div class="result-number">0 Kč</div>
+                <div class="result-progress">
+                    <div class="result-progress-bar"></div>
+                </div>
+                <div class="result-text">Celkový profit přinesený našim klientům</div>
+            </div>
+            <div class="result-card" data-target="150" data-suffix="%">
+                <div class="result-number">0%</div>
+                <div class="result-progress">
+                    <div class="result-progress-bar"></div>
+                </div>
+                <div class="result-text">Průměrný nárůst engagementu</div>
+            </div>
+            <div class="result-card" data-target="50" data-suffix="+">
+                <div class="result-number">0+</div>
+                <div class="result-progress">
+                    <div class="result-progress-bar"></div>
+                </div>
+                <div class="result-text">Spokojených klientů</div>
+            </div>
+            <div class="result-card" data-target="1000000" data-suffix="+">
+                <div class="result-number">0+</div>
+                <div class="result-progress">
+                    <div class="result-progress-bar"></div>
+                </div>
+                <div class="result-text">Dosažených lidí měsíčně</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section partners">
+        <h2>Důvěřují nám</h2>
+        <div class="partners-scroll">
+            <svg class="partner-logo" width="120" height="60" viewBox="0 0 120 60" fill="currentColor">
+                <text x="10" y="35" font-family="Arial, sans-serif" font-size="18" font-weight="bold">SPEEDSTYLE</text>
+            </svg>
+            <svg class="partner-logo" width="100" height="60" viewBox="0 0 100 60" fill="currentColor">
+                <text x="10" y="35" font-family="Arial, sans-serif" font-size="18" font-weight="bold">MEDIPET</text>
+            </svg>
+            <svg class="partner-logo" width="80" height="60" viewBox="0 0 80 60" fill="currentColor">
+                <text x="10" y="35" font-family="Arial, sans-serif" font-size="18" font-weight="bold">NIKE</text>
+            </svg>
+            <svg class="partner-logo" width="90" height="60" viewBox="0 0 90 60" fill="currentColor">
+                <text x="10" y="35" font-family="Arial, sans-serif" font-size="18" font-weight="bold">APPLE</text>
+            </svg>
+            <svg class="partner-logo" width="120" height="60" viewBox="0 0 120 60" fill="currentColor">
+                <text x="10" y="35" font-family="Arial, sans-serif" font-size="18" font-weight="bold">SPEEDSTYLE</text>
+            </svg>
+            <svg class="partner-logo" width="100" height="60" viewBox="0 0 100 60" fill="currentColor">
+                <text x="10" y="35" font-family="Arial, sans-serif" font-size="18" font-weight="bold">MEDIPET</text>
+            </svg>
+            <svg class="partner-logo" width="80" height="60" viewBox="0 0 80 60" fill="currentColor">
+                <text x="10" y="35" font-family="Arial, sans-serif" font-size="18" font-weight="bold">NIKE</text>
+            </svg>
+            <svg class="partner-logo" width="90" height="60" viewBox="0 0 90 60" fill="currentColor">
+                <text x="10" y="35" font-family="Arial, sans-serif" font-size="18" font-weight="bold">APPLE</text>
+            </svg>
+        </div>
+    </section>
+
+    <section class="section showcase">
+        <h2>Ukázka našich výsledků</h2>
+        <div class="showcase-grid">
+            <div class="showcase-item">
+                <div class="showcase-image">
+                    <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCADIAMgDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD3+iiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAP/9k=" alt="Medipet Instagram Analytics">
+                </div>
+                <div class="showcase-description">
+                    <strong>Medipet - Instagram Analytics</strong><br>
+                    Dosah přes 462,000 zobrazení za 90 dní s nárůstem oslovených účtů o +52.3%
+                </div>
+            </div>
+            <div class="showcase-item">
+                <div class="showcase-image">
+                    <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCADIAMgDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD3+iiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAP/9k=" alt="Speedstyle Reels Results">
+                </div>
+                <div class="showcase-description">
+                    <strong>Speedstyle - Reels Strategie</strong><br>
+                    Naše Reels metoda přinesla přes 462,000 zobrazení s 60% úspěšností reels obsahu
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section certifications">
+        <h2>Naše certifikace</h2>
+        <div class="certifications-grid">
+            <div class="certification-card">
+                <div class="certification-image">
+                    <img src="https://media.licdn.com/dms/image/v2/D4E2DAQEXJqTiUKXKcA/profile-treasury-image-shrink_800_800/B4EZaVpZGKHYAY-/0/1746267378638?e=1750449600&v=beta&t=Ar8gkF0fqwX85vnXfli_VPCx7r77pUw-0pVaTF1ve5o" alt="Meta Certified Digital Marketing Associate">
+                </div>
+                <div class="certification-title">Meta Certified Digital Marketing Associate</div>
+            </div>
+            <div class="certification-card">
+                <div class="certification-image">
+                    <img src="https://media.licdn.com/dms/image/v2/D4E2DAQEjQGgjhenh5w/profile-treasury-image-shrink_800_800/B4EZah2vSAHkAY-/0/1746472204352?e=1750449600&v=beta&t=abF5EPhJKt_qW4uoIKMDVESeiJyfOI93VqqV1MJbHfk" alt="Google Ads Certification">
+                </div>
+                <div class="certification-title">Google Ads Certification</div>
+            </div>
+            <div class="certification-card">
+                <div class="certification-image">
+                    <img src="https://media.licdn.com/dms/image/v2/D4E2DAQGEMZGh96Ya7Q/profile-treasury-image-shrink_800_800/B4EZaXP93QHoAg-/0/1746294267928?e=1750449600&v=beta&t=RMVvR030BWBEzz7QmqC9HCRKBaTS-AdX7-gzH4pVnsY" alt="HubSpot Content Marketing Certification">
+                </div>
+                <div class="certification-title">HubSpot Content Marketing Certification</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section contact" id="contact">
+        <h2>Máte zájem o naše služby?</h2>
+        <p>Vyplňte rychlý dotazník a my vás budeme kontaktovat</p>
+        <form class="contact-form" id="contactForm">
+            <div class="form-group">
+                <label for="name">Jméno a příjmení *</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="company">Název firmy *</label>
+                <input type="text" id="company" name="company" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email *</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="phone">Telefon</label>
+                <input type="tel" id="phone" name="phone">
+            </div>
+            <div class="form-group">
+                <label for="service">Jaká služba vás zajímá? *</label>
+                <select id="service" name="service" required>
+                    <option value="">Vyberte službu</option>
+                    <option value="instagram">Instagram Management</option>
+                    <option value="facebook">Facebook Marketing</option>
+                    <option value="tiktok">TikTok Content</option>
+                    <option value="linkedin">LinkedIn - Založení & Správa</option>
+                    <option value="analytika">Analytika & Reporting</option>
+                    <option value="strategie">Strategie & Konzultace</option>
+                    <option value="komplexni">Komplexní správa všech sítí</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="budget">Plánovaný měsíční rozpočet *</label>
+                <select id="budget" name="budget" required>
+                    <option value="">Vyberte rozpočet</option>
+                    <option value="5k">Do 5,000 Kč</option>
+                    <option value="10k">5,000 - 10,000 Kč</option>
+                    <option value="20k">10,000 - 20,000 Kč</option>
+                    <option value="35k">20,000 - 35,000 Kč</option>
+                    <option value="50k">35,000 - 50,000 Kč</option>
+                    <option value="50k+">Nad 50,000 Kč</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="message">Další informace</label>
+                <textarea id="message" name="message" rows="4" placeholder="Popište nám více o vašem projektu..."></textarea>
+            </div>
+            <button type="submit" class="submit-btn">Odeslat poptávku</button>
+        </form>
+    </section>
+
+    <footer>
+        <div class="footer-content">
+            <h3>LynkUp</h3>
+            <div class="contact-info">
+                <div>info@lynkup.cz</div>
+                <div>+420 724 977 462</div>
+                <div>Zlín, Česká republika</div>
+            </div>
+            <div class="social-links">
+                <a href="#" target="_blank">Facebook</a>
+                <a href="#" target="_blank">Instagram</a>
+                <a href="#" target="_blank">TikTok</a>
+                <a href="#" target="_blank">LinkedIn</a>
+            </div>
+            <div class="company-info">
+                <p>RH Enterprise s.r.o</p>
+                <p><strong>IČO:</strong> 21120749</p>
+            </div>
+            <p>&copy; 2025 LynkUp. Všechna práva vyhrazena.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Generování částic
+        const particlesContainer = document.getElementById('particles');
+        const particleCount = 50;
+
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 20 + 's';
+            particle.style.animationDuration = (20 + Math.random() * 10) + 's';
+            particlesContainer.appendChild(particle);
+        }
+
+        // Smooth scrolling with offset for fixed header
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    const headerHeight = document.querySelector('header').offsetHeight;
+                    const targetPosition = target.offsetTop - headerHeight - 20;
+                    window.scrollTo({
+                        top: targetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // Header scroll effect
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('header');
+            if (window.scrollY > 100) {
+                header.style.background = 'rgba(10, 10, 10, 0.98)';
+                header.style.borderBottom = '1px solid rgba(255, 255, 255, 0.2)';
+            } else {
+                header.style.background = 'rgba(10, 10, 10, 0.95)';
+                header.style.borderBottom = '1px solid rgba(255, 255, 255, 0.1)';
+            }
+        });
+
+        // Form submission
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const requiredFields = this.querySelectorAll('[required]');
+            let allValid = true;
+            
+            requiredFields.forEach(field => {
+                if (!field.value.trim()) {
+                    allValid = false;
+                    field.style.borderColor = 'var(--neon-pink)';
+                    field.style.boxShadow = '0 0 20px rgba(255, 0, 128, 0.4)';
+                } else {
+                    field.style.borderColor = 'rgba(0, 255, 255, 0.3)';
+                    field.style.boxShadow = 'none';
+                }
+            });
+            
+            if (allValid) {
+                const submitBtn = this.querySelector('.submit-btn');
+                const originalText = submitBtn.textContent;
+                submitBtn.textContent = 'Odesílání...';
+                submitBtn.disabled = true;
+                
+                setTimeout(() => {
+                    alert('Děkujeme za vaši poptávku! Brzy se vám ozveme.');
+                    this.reset();
+                    submitBtn.textContent = originalText;
+                    submitBtn.disabled = false;
+                }, 2000);
+            } else {
+                alert('Prosím vyplňte všechna povinná pole.');
+            }
+        });
+
+        // Animate numbers when results section comes into view
+        const animateNumbers = () => {
+            const resultCards = document.querySelectorAll('.result-card');
+            
+            resultCards.forEach(card => {
+                const target = parseInt(card.dataset.target);
+                const suffix = card.dataset.suffix;
+                const numberElement = card.querySelector('.result-number');
+                
+                let current = 0;
+                const increment = target / 100;
+                const duration = 2000;
+                const stepTime = duration / 100;
+                
+                card.classList.add('animated');
+                
+                const timer = setInterval(() => {
+                    current += increment;
+                    
+                    if (current >= target) {
+                        current = target;
+                        clearInterval(timer);
+                    }
+                    
+                    let displayValue;
+                    if (target >= 1000000) {
+                        displayValue = (current / 1000000).toFixed(1) + 'M';
+                    } else if (target >= 1000) {
+                        displayValue = Math.floor(current).toLocaleString();
+                    } else {
+                        displayValue = Math.floor(current);
+                    }
+                    
+                    numberElement.textContent = displayValue + suffix;
+                }, stepTime);
+            });
+        };
+
+        // Intersection Observer for animations
+        const observerOptions = {
+            threshold: 0.3,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    if (entry.target.classList.contains('results')) {
+                        setTimeout(() => {
+                            animateNumbers();
+                        }, 300);
+                        observer.unobserve(entry.target);
+                    } else {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                }
+            });
+        }, observerOptions);
+
+        // Observe sections
+        document.querySelectorAll('.service-card, .showcase-item, .certification-card').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(50px)';
+            el.style.transition = 'all 0.8s ease';
+            observer.observe(el);
+        });
+
+        observer.observe(document.querySelector('.results'));
+    </script>
+</body>
+</html>
